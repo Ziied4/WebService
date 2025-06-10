@@ -11,7 +11,6 @@ Une API GraphQL complète pour la gestion de profils freelances, développée av
 - **Filtrage avancé** : Recherche par disponibilité, compétences, localisation
 - **Statistiques** : Tableau de bord avec métriques des freelances
 - **GraphQL Playground** : Interface interactive pour tester l'API
-- **Validation robuste** : Validation des données avec messages d'erreur détaillés
 - **Données de test** : 8 profils freelances complets pour les tests
 
 ## 📋 Prérequis
@@ -22,18 +21,18 @@ Une API GraphQL complète pour la gestion de profils freelances, développée av
 ## 🛠️ Installation
 
 1. **Cloner le projet**
-\`\`\`bash
+\`\`\`
 git clone <url-du-repo>
 cd freelance-platform-api
 \`\`\`
 
 2. **Installer les dépendances**
-\`\`\`bash
+\`\`\`
 npm install
 \`\`\`
 
 3. **Démarrer le serveur**
-\`\`\`bash
+\`\`\`
 # Mode développement (avec rechargement automatique)
 npm run dev
 

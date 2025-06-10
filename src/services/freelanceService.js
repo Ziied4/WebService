@@ -1,9 +1,82 @@
-const Freelance = require("../models/Freelance")
 const { v4: uuidv4 } = require("uuid")
 const SeedService = require("./seedService")
 
 // Stockage en mémoire (remplacer par une base de données en production)
 const freelances = []
+
+// Validation functions (moved from model)
+function validateFreelance(data) {
+  const errors = []
+
+  if (!data.firstName || data.firstName.trim().length < 2) {
+    errors.push("Le prénom doit contenir au moins 2 caractères")
+  }
+
+  if (!data.lastName || data.lastName.trim().length < 2) {
+    errors.push("Le nom doit contenir au moins 2 caractères")
+  }
+
+  if (!data.email || !isValidEmail(data.email)) {
+    errors.push("L'email doit être valide")
+  }
+
+  if (!data.title || data.title.trim().length < 3) {
+    errors.push("Le titre professionnel doit contenir au moins 3 caractères")
+  }
+
+  if (data.hourlyRate && (data.hourlyRate < 0 || data.hourlyRate > 1000)) {
+    errors.push("Le tarif horaire doit être entre 0 et 1000 euros")
+  }
+
+  return errors
+}
+
+function isValidEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
+}
+
+// Business logic functions (moved from model)
+function createFreelanceObject(data) {
+  return {
+    id: data.id || uuidv4(),
+    firstName: data.firstName,
+    lastName: data.lastName,
+    email: data.email,
+    phone: data.phone || null,
+    title: data.title,
+    description: data.description || null,
+    location: data.location || null,
+    hourlyRate: data.hourlyRate || null,
+    availability: data.availability || "disponible",
+    skills: data.skills || [],
+    professionalLinks: data.professionalLinks || [],
+    createdAt: data.createdAt || new Date().toISOString(),
+    updatedAt: data.updatedAt || new Date().toISOString(),
+  }
+}
+
+function updateFreelanceObject(freelance, data) {
+  Object.keys(data).forEach((key) => {
+    if (key !== "id" && key !== "createdAt" && data[key] !== undefined) {
+      freelance[key] = data[key]
+    }
+  })
+  freelance.updatedAt = new Date().toISOString()
+  return freelance
+}
+
+function getFreelanceSummary(freelance) {
+  return {
+    id: freelance.id,
+    name: `${freelance.firstName} ${freelance.lastName}`,
+    title: freelance.title,
+    location: freelance.location,
+    availability: freelance.availability,
+    skillsCount: freelance.skills.length,
+    hourlyRate: freelance.hourlyRate,
+  }
+}
 
 // Données de démonstration
 const initializeDemoData = () => {
@@ -49,7 +122,7 @@ class FreelanceService {
   // Créer un nouveau freelance
   createFreelance(data) {
     // Validation
-    const errors = Freelance.validate(data)
+    const errors = validateFreelance(data)
     if (errors.length > 0) {
       throw new Error(`Erreurs de validation: ${errors.join(", ")}`)
     }
@@ -75,7 +148,7 @@ class FreelanceService {
       }))
     }
 
-    const freelance = new Freelance(data)
+    const freelance = createFreelanceObject(data)
     freelances.push(freelance)
     return freelance
   }
@@ -89,7 +162,7 @@ class FreelanceService {
 
     // Validation des nouvelles données
     const dataToValidate = { ...freelance, ...data }
-    const errors = Freelance.validate(dataToValidate)
+    const errors = validateFreelance(dataToValidate)
     if (errors.length > 0) {
       throw new Error(`Erreurs de validation: ${errors.join(", ")}`)
     }
@@ -117,7 +190,7 @@ class FreelanceService {
       }))
     }
 
-    return freelance.update(data)
+    return updateFreelanceObject(freelance, data)
   }
 
   // Supprimer un freelance
@@ -129,6 +202,11 @@ class FreelanceService {
 
     const deletedFreelance = freelances.splice(index, 1)[0]
     return deletedFreelance
+  }
+
+  // Obtenir le résumé d'un freelance
+  getFreelanceSummary(freelance) {
+    return getFreelanceSummary(freelance)
   }
 
   // Statistiques

@@ -34,7 +34,8 @@ const resolvers = {
       if (location) filters.location = location
 
       const freelances = freelanceService.getAllFreelances(filters)
-      return freelances.map((f) => f.getSummary())
+      // Use service function instead of model method
+      return freelances.map((f) => freelanceService.getFreelanceSummary(f))
     },
 
     // Récupérer les statistiques

@@ -1,11 +1,30 @@
-const Freelance = require("../models/Freelance")
 const seedData = require("../data/seedData")
 const { v4: uuidv4 } = require("uuid")
+
+// Helper function to create freelance objects (replaces model constructor)
+function createFreelanceObject(freelanceData) {
+  return {
+    id: uuidv4(),
+    firstName: freelanceData.firstName,
+    lastName: freelanceData.lastName,
+    email: freelanceData.email,
+    phone: freelanceData.phone || null,
+    title: freelanceData.title,
+    description: freelanceData.description || null,
+    location: freelanceData.location || null,
+    hourlyRate: freelanceData.hourlyRate || null,
+    availability: freelanceData.availability || "disponible",
+    skills: freelanceData.skills || [],
+    professionalLinks: freelanceData.professionalLinks || [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }
+}
 
 class SeedService {
   // Fonction pour initialiser la base de données avec des données de test
   static initializeDatabase(freelancesArray) {
-    console.log("🌱 Initialisation de la base de données avec des données de test...")
+    console.log(" Initialisation de la base de données avec des données de test...")
 
     // Vider le tableau existant
     freelancesArray.length = 0
@@ -25,20 +44,20 @@ class SeedService {
         })),
       }
 
-      const freelance = new Freelance(processedData)
+      const freelance = createFreelanceObject(processedData)
       freelancesArray.push(freelance)
 
-      console.log(`✅ Freelance ${index + 1}/8 ajouté: ${freelance.firstName} ${freelance.lastName}`)
+      console.log(` Freelance ${index + 1}/8 ajouté: ${freelance.firstName} ${freelance.lastName}`)
     })
 
-    console.log(`🎉 Base de données initialisée avec ${freelancesArray.length} freelances`)
-    console.log("📊 Répartition par disponibilité:")
+    console.log(` Base de données initialisée avec ${freelancesArray.length} freelances`)
+    console.log(" Répartition par disponibilité:")
 
     const stats = this.getInitializationStats(freelancesArray)
     console.log(`   - Disponibles: ${stats.available}`)
     console.log(`   - Partiellement disponibles: ${stats.partiallyAvailable}`)
     console.log(`   - Indisponibles: ${stats.unavailable}`)
-    console.log(`💰 Tarif moyen: ${stats.averageRate}€/h`)
+    console.log(` Tarif moyen: ${stats.averageRate}€/h`)
   }
 
   // Statistiques d'initialisation
@@ -60,7 +79,7 @@ class SeedService {
 
   // Ajouter des freelances supplémentaires pour les tests
   static addMoreTestData(freelancesArray, count = 5) {
-    console.log(`🔄 Ajout de ${count} freelances supplémentaires pour les tests...`)
+    console.log(` Ajout de ${count} freelances supplémentaires pour les tests...`)
 
     const additionalFreelances = [
       {
@@ -109,18 +128,18 @@ class SeedService {
         })),
       }
 
-      const freelance = new Freelance(processedData)
+      const freelance = createFreelanceObject(processedData)
       freelancesArray.push(freelance)
 
       console.log(
-        `✅ Freelance supplémentaire ${index + 1}/${count} ajouté: ${freelance.firstName} ${freelance.lastName}`,
+        ` Freelance supplémentaire ${index + 1}/${count} ajouté: ${freelance.firstName} ${freelance.lastName}`,
       )
     })
   }
 
   // Réinitialiser complètement la base de données
   static resetDatabase(freelancesArray) {
-    console.log("🔄 Réinitialisation complète de la base de données...")
+    console.log(" Réinitialisation complète de la base de données...")
     this.initializeDatabase(freelancesArray)
   }
 }
